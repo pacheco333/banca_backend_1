@@ -20,3 +20,6 @@ router.get('/usuarios', registroController.obtenerUsuarios);
 router.get('/usuario/:correo', registroController.obtenerUsuarioPorCorreo);
 
 export default router;
+
+
+//comentario prueba
