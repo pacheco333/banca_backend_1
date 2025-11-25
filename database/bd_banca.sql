@@ -1,17 +1,19 @@
-DROP DATABASE IF EXISTS banca_uno;
-CREATE DATABASE banca_uno CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE banca_uno;
+-- =========================================================
+-- SCRIPT SQL PARA AIVEN - BANCA UNO
+-- =========================================================
+-- IMPORTANTE: NO usar DROP DATABASE en Aiven
+-- Usa la base de datos que Aiven te proporcionó (defaultdb)
 
 -- =========================================================
 -- TABLA: Clientes
 -- =========================================================
-CREATE TABLE clientes (
+CREATE TABLE IF NOT EXISTS clientes (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     numero_documento VARCHAR(20) UNIQUE NOT NULL,
     tipo_documento ENUM('CC', 'TI', 'R.Civil', 'PPT', 'Pasaporte', 'CarneDiplomatico', 'CedulaExtranjeria') NOT NULL,
     lugar_expedicion VARCHAR(100),
     ciudad_nacimiento VARCHAR(100),
-    fecha_nacimiento DATE ,
+    fecha_nacimiento DATE,
     fecha_expedicion DATE,
     primer_nombre VARCHAR(50) NOT NULL,
     segundo_nombre VARCHAR(50),
@@ -29,7 +31,7 @@ CREATE TABLE clientes (
 -- =========================================================
 -- TABLA: Usuarios
 -- =========================================================
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   id_usuario INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(100) NOT NULL,
   correo VARCHAR(120) NOT NULL UNIQUE,
@@ -41,7 +43,7 @@ CREATE TABLE usuarios (
 -- =========================================================
 -- TABLA: Roles
 -- =========================================================
-CREATE TABLE roles (
+CREATE TABLE IF NOT EXISTS roles (
   id_rol INT AUTO_INCREMENT PRIMARY KEY,
   nombre VARCHAR(80) NOT NULL UNIQUE,
   descripcion VARCHAR(255)
@@ -50,7 +52,7 @@ CREATE TABLE roles (
 -- =========================================================
 -- TABLA: Usuario-Rol
 -- =========================================================
-CREATE TABLE usuario_rol (
+CREATE TABLE IF NOT EXISTS usuario_rol (
   id_usuario_rol INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT NOT NULL,
   id_rol INT NOT NULL,
@@ -62,7 +64,7 @@ CREATE TABLE usuario_rol (
 -- =========================================================
 -- TABLA: Contacto Personal
 -- =========================================================
-CREATE TABLE contacto_personal (
+CREATE TABLE IF NOT EXISTS contacto_personal (
     id_contacto INT AUTO_INCREMENT PRIMARY KEY,
     direccion VARCHAR(255),
     barrio VARCHAR(100),
@@ -80,7 +82,7 @@ CREATE TABLE contacto_personal (
 -- =========================================================
 -- TABLA: Información Financiera
 -- =========================================================
-CREATE TABLE info_financiera (
+CREATE TABLE IF NOT EXISTS info_financiera (
     id_info_financiera INT AUTO_INCREMENT PRIMARY KEY,
     ingresos_mensuales DECIMAL(15,2),
     egresos_mensuales DECIMAL(15,2),
@@ -93,7 +95,7 @@ CREATE TABLE info_financiera (
 -- =========================================================
 -- TABLA: Actividad Económica
 -- =========================================================
-CREATE TABLE actividad_economica (
+CREATE TABLE IF NOT EXISTS actividad_economica (
     id_actividad_economica INT AUTO_INCREMENT PRIMARY KEY,
     profesion VARCHAR(100),
     ocupacion VARCHAR(100),
@@ -106,11 +108,10 @@ CREATE TABLE actividad_economica (
     INDEX idx_cliente (id_cliente)
 ) ENGINE=InnoDB;
 
-
 -- =========================================================
 -- TABLA: Información Laboral
 -- =========================================================
-CREATE TABLE info_laboral (
+CREATE TABLE IF NOT EXISTS info_laboral (
     id_info_laboral INT AUTO_INCREMENT PRIMARY KEY,
     nombre_empresa VARCHAR(100) NOT NULL,
     direccion_empresa VARCHAR(150),
@@ -128,7 +129,7 @@ CREATE TABLE info_laboral (
 -- =========================================================
 -- TABLA: FACTA/CRS
 -- =========================================================
-CREATE TABLE Facta_Crs (
+CREATE TABLE IF NOT EXISTS facta_crs (
     id_facta_crs INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT NOT NULL,
     es_residente_extranjero ENUM('Sí', 'No') NOT NULL DEFAULT 'No',
@@ -139,7 +140,7 @@ CREATE TABLE Facta_Crs (
 -- =========================================================
 -- TABLA: Solicitudes de Apertura
 -- =========================================================
-CREATE TABLE solicitudes_apertura (
+CREATE TABLE IF NOT EXISTS solicitudes_apertura (
   id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
   id_cliente INT NOT NULL,
   id_usuario_rol INT NOT NULL,
@@ -160,7 +161,7 @@ CREATE TABLE solicitudes_apertura (
 -- =========================================================
 -- TABLA: Cuentas de Ahorro
 -- =========================================================
-CREATE TABLE cuentas_ahorro (
+CREATE TABLE IF NOT EXISTS cuentas_ahorro (
     id_cuenta INT AUTO_INCREMENT PRIMARY KEY,
     numero_cuenta VARCHAR(20) NOT NULL UNIQUE,
     id_cliente INT NOT NULL,
@@ -175,10 +176,11 @@ CREATE TABLE cuentas_ahorro (
     INDEX idx_cta_solicitud (id_solicitud),
     INDEX idx_estado (estado_cuenta)
 ) ENGINE=InnoDB;
+
 -- =========================================================
 -- TABLA: Transacciones
 -- =========================================================
-CREATE TABLE transacciones (
+CREATE TABLE IF NOT EXISTS transacciones (
     id_transaccion INT AUTO_INCREMENT PRIMARY KEY,
     id_cuenta INT NOT NULL,
     tipo_transaccion ENUM('Apertura', 'Depósito', 'Retiro', 'Nota Débito', 'Cancelación', 'Transferencia', 'Pago', 'Otro') NOT NULL,
@@ -198,8 +200,10 @@ CREATE TABLE transacciones (
     INDEX idx_cajero (cajero)
 ) ENGINE=InnoDB;
 
-
-CREATE TABLE saldos_cajero (
+-- =========================================================
+-- TABLA: Saldos Cajero
+-- =========================================================
+CREATE TABLE IF NOT EXISTS saldos_cajero (
     id_saldo INT AUTO_INCREMENT PRIMARY KEY,
     cajero VARCHAR(50) NOT NULL UNIQUE COMMENT 'Nombre del cajero',
     saldo_efectivo DECIMAL(15, 2) DEFAULT 0.00,
@@ -210,8 +214,10 @@ CREATE TABLE saldos_cajero (
     INDEX idx_fecha (fecha_actualizacion)
 ) ENGINE=InnoDB;
 
-
-CREATE TABLE traslados_cajero (
+-- =========================================================
+-- TABLA: Traslados Cajero
+-- =========================================================
+CREATE TABLE IF NOT EXISTS traslados_cajero (
     id_traslado INT AUTO_INCREMENT PRIMARY KEY,
     cajero_origen VARCHAR(50) NOT NULL,
     cajero_destino VARCHAR(50) NOT NULL,
@@ -227,7 +233,7 @@ CREATE TABLE traslados_cajero (
 -- =========================================================
 -- TABLA: Gestión de Cuentas
 -- =========================================================
-CREATE TABLE gestion_cuentas (
+CREATE TABLE IF NOT EXISTS gestion_cuentas (
   id_gestion_cuentas INT AUTO_INCREMENT PRIMARY KEY,
   id_usuario INT NOT NULL,
   id_cuenta INT NOT NULL,
@@ -237,9 +243,46 @@ CREATE TABLE gestion_cuentas (
   FOREIGN KEY (id_cuenta) REFERENCES cuentas_ahorro(id_cuenta) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+-- ============================================
+-- INSERTAR ROLES
+-- ============================================
+INSERT INTO roles (nombre, descripcion) VALUES
+('Cajero', 'Realiza operaciones de ventanilla (apertura, consignación, retiro, etc.)'),
+('Asesor', 'Gestiona clientes y solicitudes de apertura'),
+('Director-operativo', 'Revisa y aprueba/rechaza solicitudes de apertura de cuentas'),
+('Administrador', 'Acceso total al sistema');
 
 -- ============================================
--- DATOS DE PRUEBA - CLIENTES (5 CLIENTES)
+-- INSERTAR USUARIOS
+-- Contraseña: "Cajero123"
+-- ============================================
+INSERT INTO usuarios (nombre, correo, contrasena, activo) VALUES
+('María González', 'maria.cajero@bancauno.com', '$2b$10$roq3wNFqZbrNiy59smH.xOQBcj2RiG8uzsGeRUx.cOMJJLbcW7hRi', TRUE),
+('Carlos Ramírez', 'carlos.asesor@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE),
+('Luis Fernández', 'luis.director@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE),
+('Ana Martínez', 'ana.admin@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE);
+
+-- ============================================
+-- ASIGNAR ROLES
+-- ============================================
+INSERT INTO usuario_rol (id_usuario, id_rol)
+SELECT u.id_usuario, r.id_rol FROM usuarios u CROSS JOIN roles r
+WHERE u.correo = 'maria.cajero@bancauno.com' AND r.nombre = 'Cajero';
+
+INSERT INTO usuario_rol (id_usuario, id_rol)
+SELECT u.id_usuario, r.id_rol FROM usuarios u CROSS JOIN roles r
+WHERE u.correo = 'carlos.asesor@bancauno.com' AND r.nombre = 'Asesor';
+
+INSERT INTO usuario_rol (id_usuario, id_rol)
+SELECT u.id_usuario, r.id_rol FROM usuarios u CROSS JOIN roles r
+WHERE u.correo = 'luis.director@bancauno.com' AND r.nombre = 'Director-operativo';
+
+INSERT INTO usuario_rol (id_usuario, id_rol)
+SELECT u.id_usuario, r.id_rol FROM usuarios u CROSS JOIN roles r
+WHERE u.correo = 'ana.admin@bancauno.com' AND r.nombre = 'Administrador';
+
+-- ============================================
+-- DATOS DE PRUEBA - CLIENTES
 -- ============================================
 INSERT INTO clientes (numero_documento, tipo_documento, lugar_expedicion, ciudad_nacimiento, fecha_nacimiento, fecha_expedicion, primer_nombre, segundo_nombre, primer_apellido, segundo_apellido, genero, nacionalidad, otra_nacionalidad, estado_civil, grupo_etnico) VALUES
 ('1012345678', 'CC', 'Bogotá', 'Bogotá', '1990-05-15', '2008-05-15', 'Juan', 'Carlos', 'Pérez', 'Gómez', 'M', 'Colombiano', NULL, 'Soltero', 'Ninguna'),
@@ -249,7 +292,7 @@ INSERT INTO clientes (numero_documento, tipo_documento, lugar_expedicion, ciudad
 ('1056789012', 'CC', 'Bogotá', 'Bogotá', '1998-11-25', '2016-11-25', 'María', 'José', 'García', 'Hernández', 'F', 'Colombiano', NULL, 'Soltero', 'Ninguna');
 
 -- ============================================
--- DATOS DE PRUEBA - CONTACTO PERSONAL
+-- CONTACTO PERSONAL
 -- ============================================
 INSERT INTO contacto_personal (id_cliente, direccion, barrio, departamento, telefono, ciudad, pais, correo, bloque_torre, apto_casa) VALUES
 (1, 'Calle 100 # 20-30', 'Chicó', 'Cundinamarca', '3001234567', 'Bogotá', 'Colombia', 'juan.perez@email.com', NULL, NULL),
@@ -259,7 +302,7 @@ INSERT INTO contacto_personal (id_cliente, direccion, barrio, departamento, tele
 (5, 'Carrera 7 # 45-67', 'Centro', 'Cundinamarca', '3178889900', 'Bogotá', 'Colombia', 'maria.garcia@email.com', NULL, NULL);
 
 -- ============================================
--- DATOS DE PRUEBA - INFORMACIÓN FINANCIERA
+-- INFORMACIÓN FINANCIERA
 -- ============================================
 INSERT INTO info_financiera (id_cliente, ingresos_mensuales, egresos_mensuales, total_activos, total_pasivos) VALUES
 (1, 5000000.00, 2500000.00, 50000000.00, 10000000.00),
@@ -269,7 +312,7 @@ INSERT INTO info_financiera (id_cliente, ingresos_mensuales, egresos_mensuales, 
 (5, 3500000.00, 1800000.00, 25000000.00, 5000000.00);
 
 -- ============================================
--- DATOS DE PRUEBA - ACTIVIDAD ECONÓMICA
+-- ACTIVIDAD ECONÓMICA
 -- ============================================
 INSERT INTO actividad_economica (id_cliente, profesion, ocupacion, codigo_CIIU, detalle_actividad, numero_empleados, facta_crs) VALUES
 (1, 'Ingeniero de Sistemas', 'Desarrollador', '6201', 'Desarrollo de software', 0, 'No'),
@@ -279,7 +322,7 @@ INSERT INTO actividad_economica (id_cliente, profesion, ocupacion, codigo_CIIU, 
 (5, 'Diseñadora', 'Diseñadora Gráfica', '7410', 'Diseño gráfico y publicidad', 0, 'No');
 
 -- ============================================
--- DATOS DE PRUEBA - INFORMACIÓN LABORAL
+-- INFORMACIÓN LABORAL
 -- ============================================
 INSERT INTO info_laboral (id_cliente, nombre_empresa, direccion_empresa, pais_empresa, departamento_empresa, ciudad_empresa, telefono_empresa, ext, celular_empresa, correo_laboral) VALUES
 (1, 'Tech Solutions SAS', 'Calle 50 # 10-20', 'Colombia', 'Cundinamarca', 'Bogotá', '6011234567', '101', '3001234567', 'juan@techsolutions.com'),
@@ -289,7 +332,7 @@ INSERT INTO info_laboral (id_cliente, nombre_empresa, direccion_empresa, pais_em
 (5, 'Diseños Creativos', 'Carrera 15 # 80-25', 'Colombia', 'Cundinamarca', 'Bogotá', '6015678901', '505', '3178889900', 'maria@disenoscreativos.com');
 
 -- ============================================
--- DATOS DE PRUEBA - FACTA CRS
+-- FACTA CRS
 -- ============================================
 INSERT INTO Facta_Crs (id_cliente, es_residente_extranjero, pais) VALUES
 (1, 'No', NULL),
@@ -299,63 +342,7 @@ INSERT INTO Facta_Crs (id_cliente, es_residente_extranjero, pais) VALUES
 (5, 'No', NULL);
 
 -- ============================================
--- ROLES DE USUARIO
--- ============================================
-INSERT INTO roles (nombre, descripcion) VALUES
-('Cajero', 'Realiza operaciones de ventanilla (apertura, consignación, retiro, etc.)'),
-('Asesor', 'Gestiona clientes y solicitudes de apertura'),
-('Director-operativo', 'Revisa y aprueba/rechaza solicitudes de apertura de cuentas'),
-('Administrador', 'Acceso total al sistema');
-
--- ============================================
--- USUARIOS DE PRUEBA
--- Contraseña para todos: "Cajero123"
--- Hash: $2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW
--- ============================================
-INSERT INTO usuarios (nombre, correo, contrasena, activo) VALUES
-('María González', 'maria.cajero@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE),
-('Carlos Ramírez', 'carlos.asesor@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE),
-('Luis Fernández', 'luis.director@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE),
-('Ana Martínez', 'ana.admin@bancauno.com', '$2b$10$EixZaYVK1fsbw1ZfbX3OXePaWxn96p36WQoeG6Lruj3vjPGga31lW', TRUE);
-
--- ============================================
--- ASIGNAR ROLES A USUARIOS
--- ============================================
-
--- María González - Cajero
-INSERT INTO usuario_rol (id_usuario, id_rol)
-SELECT u.id_usuario, r.id_rol
-FROM usuarios u
-CROSS JOIN roles r
-WHERE u.correo = 'maria.cajero@bancauno.com'
-  AND r.nombre = 'Cajero';
-
--- Carlos Ramírez - Asesor
-INSERT INTO usuario_rol (id_usuario, id_rol)
-SELECT u.id_usuario, r.id_rol
-FROM usuarios u
-CROSS JOIN roles r
-WHERE u.correo = 'carlos.asesor@bancauno.com'
-  AND r.nombre = 'Asesor';
-
--- Luis Fernández - Director Operativo
-INSERT INTO usuario_rol (id_usuario, id_rol)
-SELECT u.id_usuario, r.id_rol
-FROM usuarios u
-CROSS JOIN roles r
-WHERE u.correo = 'luis.director@bancauno.com'
-  AND r.nombre = 'Director-operativo';
-
--- Ana Martínez - Administrador
-INSERT INTO usuario_rol (id_usuario, id_rol)
-SELECT u.id_usuario, r.id_rol
-FROM usuarios u
-CROSS JOIN roles r
-WHERE u.correo = 'ana.admin@bancauno.com'
-  AND r.nombre = 'Administrador';
-
--- ============================================
--- SOLICITUDES DE APERTURA CON ASESOR
+-- SOLICITUDES DE APERTURA
 -- ============================================
 INSERT INTO solicitudes_apertura (id_cliente, id_usuario_rol, tipo_cuenta, estado, comentario_director, fecha_respuesta) VALUES
 (1, 2, 'Ahorros', 'Aprobada', 'Cliente cumple con todos los requisitos. Aprobado.', NOW()),
@@ -365,7 +352,7 @@ INSERT INTO solicitudes_apertura (id_cliente, id_usuario_rol, tipo_cuenta, estad
 (5, 2, 'Ahorros', 'Aprobada', 'Cliente verificado. Listo para apertura de cuenta.', NOW());
 
 -- ============================================
--- CUENTAS DE AHORRO (4 CUENTAS)
+-- CUENTAS DE AHORRO
 -- ============================================
 INSERT INTO cuentas_ahorro (numero_cuenta, id_cliente, id_solicitud, saldo, estado_cuenta) VALUES
 ('4001000001', 1, 1, 500000.00, 'Activa'),
@@ -374,7 +361,7 @@ INSERT INTO cuentas_ahorro (numero_cuenta, id_cliente, id_solicitud, saldo, esta
 ('4001000004', 1, NULL, 0.00, 'Cerrada');
 
 -- ============================================
--- TRANSACCIONES DE PRUEBA
+-- TRANSACCIONES
 -- ============================================
 INSERT INTO transacciones (id_cuenta, tipo_transaccion, tipo_deposito, monto, saldo_anterior, saldo_nuevo, cajero, motivo_cancelacion) VALUES
 (1, 'Apertura', NULL, 0.00, 0.00, 0.00, 'María González', NULL),
@@ -404,79 +391,3 @@ INSERT INTO traslados_cajero (cajero_origen, cajero_destino, monto, estado, fech
 ('Cajero Auxiliar 01', 'María González', 50000.00, 'Pendiente', NOW(), NULL),
 ('Cajero Principal', 'María González', 100000.00, 'Pendiente', NOW(), NULL),
 ('Cajero Auxiliar 02', 'Cajero Principal', 200000.00, 'Aceptado', DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY));
-
--- ============================================
--- CONSULTAS DE VERIFICACIÓN
--- ============================================
-
-SELECT '=== RESUMEN DE LA BASE DE DATOS ===' AS '';
-
-SELECT 
-    'Clientes' AS tabla,
-    COUNT(*) AS registros,
-    'Datos personales de clientes' AS descripcion
-FROM clientes
-UNION ALL
-SELECT 
-    'Usuarios',
-    COUNT(*),
-    'Usuarios del sistema con JWT'
-FROM usuarios
-UNION ALL
-SELECT 
-    'Roles',
-    COUNT(*),
-    'Roles disponibles'
-FROM roles
-UNION ALL
-SELECT 
-    'Cuentas Activas',
-    COUNT(*),
-    'Cuentas de ahorro activas'
-FROM cuentas_ahorro
-WHERE estado_cuenta = 'Activa'
-UNION ALL
-SELECT 
-    'Transacciones',
-    COUNT(*),
-    'Historial de transacciones'
-FROM transacciones
-UNION ALL
-SELECT 
-    'Cajeros',
-    COUNT(*),
-    'Cajeros con saldo asignado'
-FROM saldos_cajero;
-
--- Ver usuarios con sus roles
-SELECT 
-    '=== USUARIOS Y ROLES ===' AS '';
-
-SELECT 
-    u.nombre AS usuario,
-    u.correo,
-    r.nombre AS rol,
-    u.activo
-FROM usuarios u
-LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario
-LEFT JOIN roles r ON ur.id_rol = r.id_rol
-ORDER BY r.nombre, u.nombre;
-
-UPDATE usuarios SET contrasena = '$2b$10$roq3wNFqZbrNiy59smH.xOQBcj2RiG8uzsGeRUx.cOMJJLbcW7hRi' WHERE correo = 'maria.cajero@bancauno.com';
-
-SELECT * FROM traslados_cajero;
-SELECT * FROM usuarios;	
-
-SELECT * FROM clientes;
-SELECT * FROM cuentas_ahorro;
-SELECT * FROM transacciones;
-
-
-
-
-SELECT * FROM clientes;
-SELECT * FROM contacto_personal;
-SELECT * FROM info_laboral;
-SELECT * FROM info_financiera;
-SELECT * FROM actividad_economica;
-SELECT * FROM Facta_Crs;
