@@ -5,6 +5,7 @@ import { authMiddleware } from './shared/middleware/authMiddleware';
 import asesorRoutes from './modules/asesor/asesor.routes';
 import cajeroRoutes from './modules/cajero/cajero.routes';
 import directorRoutes from './modules/director-operativo/director.routes';
+import cajeroPrincipalRoutes from './modules/cajero_principal/cajero_principal.routes';
 import authRoutes from './auth/auth.routes';
 
 // ⚠️ CRÍTICO: Cargar variables de entorno PRIMERO
@@ -50,6 +51,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/asesor', authMiddleware, asesorRoutes);    
 app.use('/api/director', authMiddleware, directorRoutes);
 app.use('/api/cajero', authMiddleware, cajeroRoutes);
+// Rutas de saldos / cajero principal (protección aplicada dentro del router en rutas específicas)
+app.use('/api/saldos', cajeroPrincipalRoutes);
 
 // ============================================
 // RUTA PRINCIPAL - Documentación API
@@ -68,7 +71,8 @@ app.get('/', (req, res) => {
       auth: '/api/auth/*',
       asesor: '/api/asesor/* (protegido)',
       director: '/api/director/* (protegido)',
-      cajero: '/api/cajero/* (protegido)'
+      cajero: '/api/cajero/* (protegido)',
+      saldos: '/api/saldos/*'
     },
     endpoints: {
       // Autenticación
@@ -111,7 +115,13 @@ app.get('/', (req, res) => {
         procesarRetiro: 'POST /api/cajero/retiro/procesar-retiro',
         procesarConsignacion: 'POST /api/cajero/consignacion/procesar',
         consultarSaldo: 'GET /api/cajero/saldo/consultar'
-      }
+      },
+
+      saldosCajeros: 'GET /api/saldos/cajeros',
+      movimientosCaja: 'GET /api/saldos/caja/:id/movimientos',
+      resumenDia: 'GET /api/saldos/resumen-dia',
+      saldoBoveda: 'GET /api/saldos/boveda/saldo',
+      saldoOficina: 'GET /api/saldos/oficina/saldo',
     },
     notes: {
       authentication: 'Usa el header: Authorization: Bearer <token>',

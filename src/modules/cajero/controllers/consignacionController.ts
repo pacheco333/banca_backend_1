@@ -12,7 +12,7 @@ export class ConsignacionController {
       const user = (req as any).user;
       const nombreCajero = user?.nombre || 'Cajero 01';
 
-      console.log(`Consignación por cajero: ${nombreCajero}`);
+      console.log(`Consignación por cajero: ${nombreCajero}, Caja: ${datos.idCaja}`);
 
       // Pasar nombreCajero al servicio
       const resultado = await consignacionService.procesarConsignacion({

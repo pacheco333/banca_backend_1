@@ -48,6 +48,8 @@ export interface LoginResponse {
     nombre: string;
     rol: string;
     id_usuario_rol?: number;
+    id_caja?: number;           // ← NUEVO: Para cajeros
+    nombre_caja?: string;       // ← NUEVO: Para cajeros
   };
 }
 
@@ -91,6 +93,8 @@ export interface AuthUser {
   correo: string;
   rol: string;
   id_usuario_rol: number;
+  id_caja?: number;            // ← NUEVO: Para cajeros
+  nombre_caja?: string;        // ← NUEVO: Para cajeros
 }
 
 // ========== INTERFACES PARA REGISTRAR CLIENTE ==========
@@ -237,6 +241,8 @@ export interface AperturarCuentaRequest {
   valorDeposito: number;
   codigoCheque?: string;
   numeroCheque?: string;
+  idUsuario?: number;    // ← NUEVO: id_usuario del cajero
+  idCaja?: number;      // ← NUEVO: id_caja asignada
 }
 
 export interface AperturarCuentaResponse {
@@ -269,7 +275,9 @@ export interface ProcesarRetiroRequest {
   idCuenta: number;
   numeroDocumento: string;
   montoRetirar: number;
-  cajero?: string;
+  idUsuario?: number;      // ← NUEVO
+  idCaja?: number;         // ← NUEVO  
+  nombreCaja?: string;     // ← NUEVO
 }
 
 export interface ProcesarRetiroResponse {
@@ -289,6 +297,9 @@ export interface AplicarNotaDebitoRequest {
   numeroDocumento: string;
   valor: number;
   cajero?: string; 
+  idUsuario?: number;      // ← NUEVO
+  idCaja?: number;         // ← NUEVO  
+  nombreCaja?: string;     // ← NUEVO
 }
 
 export interface AplicarNotaDebitoResponse {
@@ -310,6 +321,8 @@ export interface ProcesarConsignacionRequest {
   codigoCheque?: string;
   numeroCheque?: string;
   cajero?: string;
+  idUsuario?: number;    // ← AGREGADO
+  idCaja?: number;      // ← AGREGADO
 }
 
 export interface ProcesarConsignacionResponse {
@@ -334,6 +347,9 @@ export interface CancelarCuentaRequest {
   numeroCuenta: string;
   numeroDocumento: string;
   motivoCancelacion: string;
+  idUsuario?: number;      // ← CORREGIDO: id_usuario
+  idCaja?: number;         // ← id_caja
+  nombreCaja?: string;     // ← nombre_caja
 }
 
 export interface CancelarCuentaResponse {
@@ -354,6 +370,9 @@ export interface EnviarTrasladoRequest {
   cajeroOrigen: string;
   cajeroDestino: string;
   monto: number;
+  idUsuario?: number;      // ← NUEVO
+  idCaja?: number;         // ← NUEVO  
+  nombreCaja?: string;     // ← NUEVO
 }
 
 export interface EnviarTrasladoResponse {
@@ -383,6 +402,9 @@ export interface ConsultarTrasladosResponse {
 export interface AceptarTrasladoRequest {
   idTraslado: number;
   cajeroDestino: string;
+  idUsuario?: number;      // ← NUEVO
+  idCaja?: number;         // ← NUEVO  
+  nombreCaja?: string;     // ← NUEVO
 }
 
 export interface AceptarTrasladoResponse {

@@ -35,7 +35,7 @@ export class AperturaController {
       const user = (req as any).user;  // Viene del authMiddleware
       const nombreCajero = user?.nombre || 'Cajero 01';  // Fallback
 
-      console.log(`✅ Apertura de cuenta por cajero: ${nombreCajero}`);
+      console.log(`✅ Apertura de cuenta por cajero: ${nombreCajero}, Caja: ${datos.idCaja}`);
 
       // Validaciones
       if (!datos.idSolicitud || !datos.tipoDeposito || datos.valorDeposito === undefined) {
