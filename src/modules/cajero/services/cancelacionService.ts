@@ -87,7 +87,7 @@ export class CancelacionService {
       const motivoFinal = datos.motivoCancelacion?.trim() || 'Sin motivo especificado';
       
       await connection.query(
-        'INSERT INTO transacciones (id_cuenta, tipo_transaccion, monto, saldo_anterior, saldo_nuevo, fecha_transaccion, motivo_cancelacion) VALUES (?, "Cancelación", 0, 0, 0, NOW(), ?)',
+        'INSERT INTO transacciones (id_cuenta, tipo_transaccion, monto, saldo_anterior, saldo_nuevo, fecha_transaccion, motivo_cancelacion) VALUES (?, \'Cancelación\', 0, 0, 0, NOW(), ?)',
         [cuenta.id_cuenta, motivoFinal]
       );
 
