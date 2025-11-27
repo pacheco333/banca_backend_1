@@ -88,7 +88,7 @@ export class RegistrarClienteService {
         `
         INSERT INTO actividad_economica (
           profesion, ocupacion, codigo_CIIU, detalle_actividad,
-          numero_empleados, Facta_Crs, id_cliente
+          numero_empleados, facta_crs, id_cliente
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
@@ -146,7 +146,7 @@ export class RegistrarClienteService {
       // === 4. Insertar FACTA/CRS ===
       await connection.execute(
         `
-        INSERT INTO facta_crs (id_cliente, es_residente_extranjero, pais)
+        INSERT INTO Facta_Crs (id_cliente, es_residente_extranjero, pais)
         VALUES (?, ?, ?)
         `,
         [idCliente,esResidente, data.facta?.pais]
