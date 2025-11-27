@@ -88,7 +88,7 @@ export class RegistrarClienteService {
         `
         INSERT INTO actividad_economica (
           profesion, ocupacion, codigo_CIIU, detalle_actividad,
-          numero_empleados, facta_crs, id_cliente
+          numero_empleados, Facta_Crs, id_cliente
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
