@@ -49,7 +49,7 @@ export class SaldosService {
          LEFT JOIN usuario_rol ur ON u.id_usuario = ur.id_usuario AND ur.id_rol = (SELECT id_rol FROM roles WHERE nombre = 'Cajero')
          LEFT JOIN transacciones t ON c.id_caja = t.id_caja AND DATE(t.fecha_transaccion) = CURDATE()
          WHERE c.nombre_caja != 'Caja Principal'  -- Excluir caja principal del listado
-         GROUP BY c.id_caja, c.nombre_caja, u.nombre, sc.saldo_efectivo, c.estado
+          GROUP BY c.id_caja, c.nombre_caja, u.nombre, sc.saldo_efectivo, c.estado, u.id_usuario, ur.id_usuario_rol
          ORDER BY c.nombre_caja`
       );
 
