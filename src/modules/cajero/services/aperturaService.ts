@@ -190,7 +190,7 @@ export class AperturaService {
       // ✅ MEJORADO: Registrar transacción de apertura con todos los campos
       const [resultTransaccion]: any = await connection.query(
         `INSERT INTO transacciones (id_cuenta, tipo_transaccion, tipo_deposito, monto, codigo_cheque, numero_cheque, saldo_anterior, saldo_nuevo, id_usuario, id_caja)
-         VALUES (?, 'Apertura', ?, ?, ?, ?, 0, ?, ?, ?, ?)`,
+         VALUES (?, 'Apertura', ?, ?, ?, ?, 0, ?, ?, ?)`,
         [
           idCuenta,
           datos.tipoDeposito,
@@ -198,8 +198,8 @@ export class AperturaService {
           datos.codigoCheque || null,
           datos.numeroCheque || null,
           datos.valorDeposito,
-          datos.idUsuario || null, // ← NUEVO: id_usuario del cajero
-          datos.idCaja || null, // ← NUEVO: id_caja asignada
+          idUsuario, // ← id_usuario del cajero (parámetro de la función)
+          datos.idCaja || null, // ← id_caja asignada
         ]
       );
 
