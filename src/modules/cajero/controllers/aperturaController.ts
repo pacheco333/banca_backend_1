@@ -31,11 +31,19 @@ export class AperturaController {
     try {
       const datos = req.body;
 
-      // ✅ EXTRAER el nombre del cajero del token JWT
+      // ✅ EXTRAER el id_usuario del token JWT
       const user = (req as any).user;  // Viene del authMiddleware
-      const nombreCajero = user?.nombre || 'Cajero 01';  // Fallback
+      const idUsuario = user?.id_usuario;  // Debe ser un número
+      const nombreCajero = user?.nombre || 'Cajero';  // Solo para logs
 
-      console.log(`✅ Apertura de cuenta por cajero: ${nombreCajero}, Caja: ${datos.idCaja}`);
+      if (!idUsuario) {
+        return res.status(401).json({
+          exito: false,
+          mensaje: 'Usuario no autenticado correctamente'
+        });
+      }
+
+      console.log(`✅ Apertura de cuenta por cajero: ${nombreCajero} (ID: ${idUsuario}), Caja: ${datos.idCaja}`);
 
       // Validaciones
       if (!datos.idSolicitud || !datos.tipoDeposito || datos.valorDeposito === undefined) {
@@ -52,8 +60,8 @@ export class AperturaController {
         });
       }
 
-      // ✅ Pasar nombreCajero al servicio
-      const resultado = await aperturaService.aperturarCuenta(datos, nombreCajero);
+      // ✅ Pasar id_usuario (número) al servicio
+      const resultado = await aperturaService.aperturarCuenta(datos, idUsuario);
       return res.json(resultado);
 
     } catch (error) {
