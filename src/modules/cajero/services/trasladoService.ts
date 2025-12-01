@@ -59,19 +59,16 @@ export class TrasladoService {
         };
       }
 
-      // 5. ✅ CORREGIDO: Registrar el traslado con AUDITORÍA COMPLETA
+      // 5. Registrar el traslado con auditoría mínima disponible (según esquema actual)
       const [resultado]: any = await connection.query(
         `INSERT INTO traslados_cajero 
-         (cajero_origen, cajero_destino, monto, estado, fecha_envio,
-          id_usuario_origen, id_caja_origen, nombre_caja_origen) 
-         VALUES (?, ?, ?, 'Pendiente', NOW(), ?, ?, ?)`,
+         (cajero_origen, cajero_destino, monto, estado, fecha_envio, id_usuario_origen) 
+         VALUES (?, ?, ?, 'Pendiente', NOW(), ?)`,
         [
           datos.cajeroOrigen, 
           datos.cajeroDestino, 
           datos.monto,
-          datos.idUsuario || null,        // ← NUEVO: id_usuario_origen
-          datos.idCaja || null,           // ← NUEVO: id_caja_origen
-          datos.nombreCaja || null        // ← NUEVO: nombre_caja_origen
+          datos.idUsuario || null
         ]
       );
 
@@ -106,8 +103,7 @@ export class TrasladoService {
 
     try {
       const [traslados]: any = await connection.query(
-        `SELECT id_traslado, cajero_origen, monto, fecha_envio,
-                id_usuario_origen, id_caja_origen, nombre_caja_origen
+        `SELECT id_traslado, cajero_origen, monto, fecha_envio, id_usuario_origen
          FROM traslados_cajero
          WHERE cajero_destino = ? AND estado = 'Pendiente'
          ORDER BY fecha_envio DESC`,
@@ -120,10 +116,7 @@ export class TrasladoService {
           idTraslado: t.id_traslado,
           cajeroOrigen: t.cajero_origen,
           monto: parseFloat(t.monto),
-          fechaEnvio: t.fecha_envio,
-          idUsuarioOrigen: t.id_usuario_origen,    // ← NUEVO
-          idCajaOrigen: t.id_caja_origen,          // ← NUEVO
-          nombreCajaOrigen: t.nombre_caja_origen   // ← NUEVO
+          fechaEnvio: t.fecha_envio
         }))
       };
 
@@ -143,8 +136,7 @@ export class TrasladoService {
 
       // 1. Buscar el traslado
       const [traslados]: any = await connection.query(
-        `SELECT id_traslado, cajero_origen, cajero_destino, monto, estado, fecha_envio,
-                id_usuario_origen, id_caja_origen, nombre_caja_origen
+        `SELECT id_traslado, cajero_origen, cajero_destino, monto, estado, fecha_envio, id_usuario_origen
          FROM traslados_cajero
          WHERE id_traslado = ?`,
         [datos.idTraslado]
@@ -178,18 +170,12 @@ export class TrasladoService {
         };
       }
 
-      // 4. ✅ CORREGIDO: Actualizar estado del traslado con AUDITORÍA DESTINO
+      // 4. Actualizar estado del traslado con auditoría de usuario destino (según esquema actual)
       await connection.query(
         `UPDATE traslados_cajero 
-         SET estado = 'Aceptado', fecha_aceptacion = NOW(),
-             id_usuario_destino = ?, id_caja_destino = ?, nombre_caja_destino = ?
+         SET estado = 'Aceptado', fecha_aceptacion = NOW(), id_usuario_destino = ?
          WHERE id_traslado = ?`,
-        [
-          datos.idUsuario || null,        // ← NUEVO: id_usuario_destino
-          datos.idCaja || null,           // ← NUEVO: id_caja_destino
-          datos.nombreCaja || null,       // ← NUEVO: nombre_caja_destino
-          datos.idTraslado
-        ]
+        [datos.idUsuario || null, datos.idTraslado]
       );
 
       // 5. Aumentar saldo del cajero destino
