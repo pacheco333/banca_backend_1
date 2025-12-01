@@ -69,20 +69,20 @@ export class NotaDebitoService {
         [nuevoSaldo, datos.idCuenta]
       );
 
-      // 5. ✅ CORREGIDO: Registrar transacción con AUDITORÍA COMPLETA
+      // 5. Registrar transacción con auditoría completa
       const [resultado]: any = await connection.query(`
         INSERT INTO transacciones 
         (id_cuenta, tipo_transaccion, monto, saldo_anterior, saldo_nuevo, 
-         concepto, id_usuario, id_caja, nombre_caja, fecha_transaccion)
-        VALUES (?, 'Nota Débito', ?, ?, ?, ?, ?, ?, ?, NOW())
+         id_usuario, id_caja, cajero, fecha_transaccion)
+        VALUES (?, 'Nota Débito', ?, ?, ?, ?, ?, ?, NOW())
       `, [
         datos.idCuenta, 
         datos.valor, 
         saldoActual, 
         nuevoSaldo,
-        datos.idUsuario || null,    // ← NUEVO: id_usuario
-        datos.idCaja || null,       // ← NUEVO: id_caja
-        datos.nombreCaja || null    // ← NUEVO: nombre_caja
+        datos.idUsuario || null,
+        datos.idCaja || null,
+        datos.nombreCaja || `Usuario ${datos.idUsuario}`
       ]);
 
       // 6. Actualizar saldo efectivo del cajero

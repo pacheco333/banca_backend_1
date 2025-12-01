@@ -83,20 +83,20 @@ export class CancelacionService {
         [cuenta.id_cuenta]
       );
 
-      // 7. ✅ CORREGIDO: Registrar transacción de cierre con auditoría (id_usuario)
+      // 7. Registrar transacción de cierre con auditoría completa
       const motivoFinal = datos.motivoCancelacion?.trim() || 'Sin motivo especificado';
       
       await connection.query(
         `INSERT INTO transacciones 
          (id_cuenta, tipo_transaccion, monto, saldo_anterior, saldo_nuevo, 
-          motivo_cancelacion, id_usuario, id_caja, nombre_caja, fecha_transaccion) 
+          motivo_cancelacion, id_usuario, id_caja, cajero, fecha_transaccion) 
          VALUES (?, \'Cancelación\', 0, 0, 0, ?, ?, ?, ?, NOW())`,
         [
           cuenta.id_cuenta, 
           motivoFinal,
-          datos.idUsuario || null,    // ← CORREGIDO: id_usuario
-          datos.idCaja || null,       // ← id_caja
-          datos.nombreCaja || null    // ← nombre_caja
+          datos.idUsuario || null,
+          datos.idCaja || null,
+          datos.nombreCaja || `Usuario ${datos.idUsuario}`
         ]
       );
 
