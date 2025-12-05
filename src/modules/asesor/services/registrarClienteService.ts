@@ -171,7 +171,7 @@ export class RegistrarClienteService {
     try {
       // === 1. Obtener datos principales del cliente ===
       const [clienteRows]: any = await connection.execute(
-        `SELECT * FROM clientes WHERE id = ?`,
+        `SELECT * FROM clientes WHERE id_cliente = ?`,
         [idCliente]
       );
 
