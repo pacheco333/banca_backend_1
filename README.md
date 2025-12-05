@@ -284,8 +284,9 @@ Si deseas contribuir al proyecto:
 **Santiago Ortiz**  
 **Cristina Lopez**
 **Julian Suarez**
-**Jeison Valor **
-Desarrollador del Sistema Bancario Banca Uno
+**Jeison Valor**
+
+Desarrolladores del Sistema Bancario Banca Uno
 
 ---
 
