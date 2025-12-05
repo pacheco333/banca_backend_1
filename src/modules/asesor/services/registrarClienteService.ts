@@ -329,7 +329,7 @@ export class RegistrarClienteService {
         segundo_nombre = ?, primer_apellido = ?, segundo_apellido = ?,
         genero = ?, nacionalidad = ?, otra_nacionalidad = ?, estado_civil = ?,
         grupo_etnico = ?
-      WHERE id = ?`,
+      WHERE id_cliente = ?`,
       [
         cleanData.tipoDocumento,
         cleanData.lugarExpedicion,
