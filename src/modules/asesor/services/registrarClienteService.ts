@@ -89,7 +89,7 @@ export class RegistrarClienteService {
         `
         INSERT INTO actividad_economica (
           profesion, ocupacion, codigo_CIIU, detalle_actividad,
-          numero_empleados, facta_crs, id_cliente
+          numero_empleados, Facta_Crs, id_cliente
         ) VALUES (?, ?, ?, ?, ?, ?, ?)
         `,
         [
@@ -374,7 +374,7 @@ export class RegistrarClienteService {
     await connection.execute(
       `UPDATE actividad_economica SET
         profesion = ?, ocupacion = ?, codigo_CIIU = ?, detalle_actividad = ?,
-        numero_empleados = ?, facta_crs = ?
+        numero_empleados = ?, Facta_Crs = ?
       WHERE id_cliente = ?`,
       [
         cleanData.actividad?.profesion,
@@ -426,7 +426,7 @@ export class RegistrarClienteService {
     // === 6. Actualizar FACTA/CRS ===
     const esResidente = cleanData.facta?.esResidenteExtranjero ? 'Sí' : 'No';
     await connection.execute(
-      `UPDATE facta_crs SET
+      `UPDATE Facta_Crs SET
         es_residente_extranjero = ?, pais = ?
       WHERE id_cliente = ?`,
       [esResidente, cleanData.facta?.pais, idCliente]
