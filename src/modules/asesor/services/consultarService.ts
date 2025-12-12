@@ -46,8 +46,13 @@ export class ClienteService {
           estado_cuenta,
           fecha_apertura
         FROM cuentas_ahorro
-        WHERE id_cliente = ? AND estado_cuenta IN ('Activa', 'Inactiva')
-        ORDER BY fecha_apertura DESC`,
+        WHERE id_cliente = ? AND estado_cuenta IN ('Activa', 'Cerrada')
+        ORDER BY 
+          CASE estado_cuenta
+            WHEN 'Activa' THEN 1
+            WHEN 'Cerrada' THEN 2
+          END,
+          fecha_apertura DESC`,
         [cliente.id_cliente]
       );
 
