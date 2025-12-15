@@ -23,6 +23,7 @@ const allowedOrigins = [
   'http://localhost:4200',           // Desarrollo local Angular
   'http://localhost:3000',           // Desarrollo local backend
   'https://banca-frontend-1.vercel.app',  // Producción frontend
+  'https://banca-frontend-1-qlvd1t3gl-pachecos-projects-bcea152b.vercel.app',
   'https://banca-backend-1.onrender.com'  // Producción backend
 ];
 
