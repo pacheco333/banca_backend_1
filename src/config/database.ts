@@ -1,5 +1,8 @@
 import mysql from 'mysql2/promise';
 
+// Valores por defecto para referencia (se usan solo si .env no está configurado)
+// DESARROLLO: localhost:3307
+// PRODUCCIÓN (Aiven): banca-uno-santiago2006ortizp-5f86.b.aivencloud.com:13730
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'banca-uno-santiago2006ortizp-5f86.b.aivencloud.com',
   user: process.env.DB_USER || 'avnadmin',          
@@ -14,8 +17,8 @@ const pool = mysql.createPool({
   }
 });
 
-// Verificación (opcional, útil para debug)
-console.log(' Conectando a MySQL:', {
+// Verificación (útil para debug)
+console.log('📊 Conectando a MySQL:', {
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   database: process.env.DB_NAME,

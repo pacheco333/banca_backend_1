@@ -18,15 +18,15 @@ export class OficinaService {
       const [bovedaRows] = await connection.query<RowDataPacket[]>(
         'SELECT saldo_efectivo FROM boveda ORDER BY id_boveda DESC LIMIT 1'
       );
-      const saldoBoveda = bovedaRows[0]?.saldo_efectivo || 0;
+      const saldoBoveda = Number(bovedaRows[0]?.saldo_efectivo || 0); // ✅ Convertir a número
 
       // 2. Obtener saldo total de ventanillas (suma de saldos_cajero)
       const [ventanillasRows] = await connection.query<RowDataPacket[]>(
         'SELECT COALESCE(SUM(saldo_efectivo), 0) as total_ventanillas FROM saldos_cajero'
       );
-      const saldoVentanillas = ventanillasRows[0]?.total_ventanillas || 0;
+      const saldoVentanillas = Number(ventanillasRows[0]?.total_ventanillas || 0); // ✅ Convertir a número
 
-      // 3. Calcular saldo total de oficina
+      // 3. Calcular saldo total de oficina (ahora suma correctamente)
       const saldoOficina = saldoBoveda + saldoVentanillas;
 
       return {

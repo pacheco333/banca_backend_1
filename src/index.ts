@@ -1,6 +1,9 @@
+// ⚠️ CRÍTICO: Cargar variables de entorno PRIMERO - ANTES de cualquier import
+import dotenv from 'dotenv';
+dotenv.config();
+
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import { authMiddleware } from './shared/middleware/authMiddleware';
 import asesorRoutes from './modules/asesor/asesor.routes';
 import cajeroRoutes from './modules/cajero/cajero.routes';
@@ -8,8 +11,6 @@ import directorRoutes from './modules/director-operativo/director.routes';
 import cajeroPrincipalRoutes from './modules/cajero_principal/cajero_principal.routes';
 import authRoutes from './auth/auth.routes';
 
-// ⚠️ CRÍTICO: Cargar variables de entorno PRIMERO
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,12 +18,30 @@ const PORT = process.env.PORT || 3000;
 // ============================================
 // MIDDLEWARES
 // ============================================
-app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:4200',
+// CORS Configuration: Soporta múltiples orígenes (desarrollo y producción)
+const allowedOrigins = [
+  'http://localhost:4200',           // Desarrollo local Angular
+  'http://localhost:3000',           // Desarrollo local backend
+  'https://banca-frontend-1.vercel.app',  // Producción frontend
+  'https://banca-backend-1.onrender.com'  // Producción backend
+];
+
+const corsOptions = {
+  origin: (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) => {
+    // Permitir requests sin origin (como mobile apps o Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS no permitido desde: ${origin}`));
+    }
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -125,7 +144,7 @@ app.get('/', (req, res) => {
     },
     notes: {
       authentication: 'Usa el header: Authorization: Bearer <token>',
-      cors: `Configurado para: ${process.env.CORS_ORIGIN || 'http://localhost:4200'}`,
+      cors: `Permitidos: ${allowedOrigins.join(', ')}`,
       database: process.env.DB_NAME || 'banca_uno'
     }
   });
